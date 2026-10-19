@@ -112,3 +112,4 @@ def test_data_quality_endpoint():
     data = res.json()
     assert "issues" in data
     assert len(data["issues"]) >= 3 # Detects our seeded test missing data
+

@@ -12,3 +12,4 @@ Write-Host "Starting Vite React frontend on http://localhost:5173..." -Foregroun
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location frontend; npm run dev"
 
 Write-Host "`nBoth services launched! Open http://localhost:5173 in your browser." -ForegroundColor Cyan
+

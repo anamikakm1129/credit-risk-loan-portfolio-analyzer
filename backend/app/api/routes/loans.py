@@ -226,3 +226,4 @@ def get_loan_repayments(
             for t in l.transactions
         ]
     }
+

@@ -106,3 +106,4 @@ def compute_vintage_matrix(
         "cohorts": result_cohorts,
         "immature_definition": "Milestones where elapsed observation period < loan age are marked immature (null), not zero."
     }
+

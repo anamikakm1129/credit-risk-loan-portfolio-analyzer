@@ -209,3 +209,4 @@ def validate_loans_data(
             valid.append(row)
 
     return valid, rejected, issues
+

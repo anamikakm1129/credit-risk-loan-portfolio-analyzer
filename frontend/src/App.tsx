@@ -11,8 +11,6 @@ import {
   Settings,
   Search,
   Calendar,
-  Bell,
-  Sparkles
 } from 'lucide-react';
 
 // Views
@@ -77,7 +75,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >
-            <LayoutDashboard size={18} />
+            <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </li>
 
@@ -86,7 +84,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'borrowers' ? 'active' : ''}`}
             onClick={() => setActiveTab('borrowers')}
           >
-            <Users size={18} />
+            <Users size={20} />
             <span>Borrowers</span>
           </li>
 
@@ -95,7 +93,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'loans' ? 'active' : ''}`}
             onClick={() => setActiveTab('loans')}
           >
-            <CreditCard size={18} />
+            <CreditCard size={20} />
             <span>Loans</span>
           </li>
 
@@ -104,7 +102,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'repayments' ? 'active' : ''}`}
             onClick={() => setActiveTab('repayments')}
           >
-            <Receipt size={18} />
+            <Receipt size={20} />
             <span>Repayments</span>
           </li>
 
@@ -113,7 +111,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'risk-analysis' ? 'active' : ''}`}
             onClick={() => setActiveTab('risk-analysis')}
           >
-            <ShieldAlert size={18} />
+            <ShieldAlert size={20} />
             <span>Risk Analysis</span>
           </li>
 
@@ -122,7 +120,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'vintage-analysis' ? 'active' : ''}`}
             onClick={() => setActiveTab('vintage-analysis')}
           >
-            <GitBranch size={18} />
+            <GitBranch size={20} />
             <span>Vintage Analysis</span>
           </li>
 
@@ -131,7 +129,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
           >
-            <FileSpreadsheet size={18} />
+            <FileSpreadsheet size={20} />
             <span>Reports</span>
           </li>
 
@@ -140,7 +138,7 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'data-quality' ? 'active' : ''}`}
             onClick={() => setActiveTab('data-quality')}
           >
-            <CheckCircle size={18} />
+            <CheckCircle size={20} />
             <span>Data Quality</span>
           </li>
 
@@ -149,17 +147,17 @@ export const App: React.FC = () => {
             className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
-            <Settings size={18} />
+            <Settings size={20} />
             <span>Settings</span>
           </li>
         </ul>
 
         <div className="sidebar-footer">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-            <span style={{ width: '8px', height: '8px', background: 'var(--status-green)', borderRadius: '50%' }} />
-            <span style={{ color: 'var(--nav-text)', fontWeight: 500 }}>System Online</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span style={{ width: '10px', height: '10px', background: 'var(--status-green)', borderRadius: '50%' }} />
+            <span style={{ color: 'var(--nav-text)', fontWeight: 600 }}>System Online</span>
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--nav-text-muted)' }}>
+          <div style={{ fontSize: '12.5px', color: 'var(--nav-text-muted)' }}>
             Ruleset v1.0 • 2026 Policy
           </div>
         </div>
@@ -171,7 +169,7 @@ export const App: React.FC = () => {
         <header className="top-header">
           {/* Global Search */}
           <form onSubmit={handleGlobalSearchSubmit} className="header-search">
-            <Search size={16} color="var(--text-muted)" />
+            <Search size={18} color="var(--text-muted)" />
             <input
               type="text"
               placeholder="Search borrower or loan ID across portfolio..."
@@ -185,8 +183,8 @@ export const App: React.FC = () => {
           <div className="header-actions">
             {/* Reporting Date Selector */}
             <div className="date-selector">
-              <Calendar size={14} color="var(--accent-bronze)" />
-              <label htmlFor="reporting-date-picker" style={{ fontWeight: 500, fontSize: '12px' }}>
+              <Calendar size={16} color="var(--accent-bronze)" />
+              <label htmlFor="reporting-date-picker" style={{ fontWeight: 600, fontSize: '13.5px' }}>
                 As of:
               </label>
               <input
@@ -197,19 +195,19 @@ export const App: React.FC = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '8px', borderLeft: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px', borderLeft: '1px solid var(--border-color)' }}>
               <div
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
                   background: 'var(--surface-subtle)',
                   border: '1px solid var(--border-color)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontWeight: 600,
-                  fontSize: '12px',
+                  fontWeight: 700,
+                  fontSize: '14px',
                   color: 'var(--accent-bronze)',
                 }}
                 title="Credit Risk Officer (Analyst Role)"
@@ -236,6 +234,7 @@ export const App: React.FC = () => {
               reportingDate={reportingDate}
               onSelectBorrower={id => setSelectedBorrowerId(id)}
               initialSearch={globalSearch}
+              onNavigate={tab => setActiveTab(tab as NavTab)}
             />
           )}
 

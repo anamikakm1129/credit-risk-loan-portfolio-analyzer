@@ -32,3 +32,4 @@ def get_credit_score_bands(
     """
     cutoff = datetime.strptime(reporting_date or settings.DEFAULT_REPORTING_DATE, "%Y-%m-%d").date()
     return {"bands": get_credit_score_band_comparisons(db, cutoff_date=cutoff)}
+

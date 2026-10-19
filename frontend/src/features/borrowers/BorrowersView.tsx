@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { StatusBadge } from '../../components/StatusBadge';
-import { Search, Filter, RotateCcw, ChevronLeft, ChevronRight, ArrowUpDown, User } from 'lucide-react';
+import { Search, RotateCcw, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 
 interface BorrowersViewProps {
   reportingDate: string;
   onSelectBorrower: (id: string) => void;
   initialSearch?: string;
+  onNavigate?: (tab: string) => void;
 }
 
 export const BorrowersView: React.FC<BorrowersViewProps> = ({
   reportingDate,
   onSelectBorrower,
   initialSearch = '',
+  onNavigate,
 }) => {
   const [items, setItems] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -94,8 +96,8 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
 
       {/* Filter Bar */}
       <form onSubmit={handleSearchSubmit} className="filter-bar">
-        <div className="filter-group" style={{ flex: 1, minWidth: '220px' }}>
-          <Search size={15} color="var(--text-muted)" />
+        <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
+          <Search size={18} color="var(--text-muted)" />
           <input
             type="text"
             placeholder="Search borrower by name or ID..."
@@ -122,7 +124,7 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
             id="filter-score"
             type="number"
             placeholder="300"
-            style={{ width: '80px' }}
+            style={{ width: '90px' }}
             value={minScore}
             onChange={e => setMinScore(e.target.value)}
           />
@@ -134,18 +136,18 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
             id="filter-score-max"
             type="number"
             placeholder="850"
-            style={{ width: '80px' }}
+            style={{ width: '90px' }}
             value={maxScore}
             onChange={e => setMaxScore(e.target.value)}
           />
         </div>
 
-        <button type="submit" className="btn btn-primary" style={{ padding: '6px 12px' }}>
+        <button type="submit" className="btn btn-primary">
           Apply
         </button>
 
-        <button type="button" className="btn btn-outline" style={{ padding: '6px 12px' }} onClick={handleReset} title="Reset all filters">
-          <RotateCcw size={14} /> Reset
+        <button type="button" className="btn btn-outline" onClick={handleReset} title="Reset all filters">
+          <RotateCcw size={16} /> Reset
         </button>
       </form>
 
@@ -182,33 +184,38 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: '32px' }}>
-                  <div className="skeleton" style={{ height: '24px', width: '200px', margin: '0 auto 8px' }} />
-                  <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Loading borrowers...</div>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '40px' }}>
+                  <div className="skeleton" style={{ height: '28px', width: '220px', margin: '0 auto 10px' }} />
+                  <div style={{ color: 'var(--text-muted)', fontSize: '15px' }}>Loading borrowers...</div>
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)' }}>
-                  No borrowers matching current filter criteria.
+                <td colSpan={9} style={{ textAlign: 'center', padding: '56px', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
+                    No borrowers found in database
+                  </div>
+                  <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginBottom: '18px' }}>
+                    Upload your borrowers CSV file via the Data Quality portal to populate this directory.
+                  </p>
                 </td>
               </tr>
             ) : (
               items.map((b: any) => (
                 <tr key={b.borrower_id} style={{ cursor: 'pointer' }} onClick={() => onSelectBorrower(b.borrower_id)}>
-                  <td style={{ fontWeight: 600 }}>{b.borrower_id}</td>
+                  <td style={{ fontWeight: 700 }}>{b.borrower_id}</td>
                   <td>{b.full_name}</td>
                   <td>
                     {b.credit_score ?? (
-                      <span style={{ color: 'var(--status-red)', fontWeight: 600, fontSize: '12px' }}>
+                      <span style={{ color: 'var(--status-red)', fontWeight: 700 }}>
                         Missing
                       </span>
                     )}
                   </td>
                   <td>{b.annual_income ? `$${b.annual_income.toLocaleString()}` : '—'}</td>
                   <td>{b.dti_ratio !== null ? `${b.dti_ratio}%` : '—'}</td>
-                  <td style={{ fontWeight: 600 }}>${b.total_exposure.toLocaleString()}</td>
-                  <td style={{ color: b.total_overdue > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 600 }}>
+                  <td style={{ fontWeight: 700 }}>${b.total_exposure.toLocaleString()}</td>
+                  <td style={{ color: b.total_overdue > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 700 }}>
                     ${b.total_overdue.toLocaleString()}
                   </td>
                   <td>
@@ -217,7 +224,7 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
                   <td>
                     <button
                       className="btn btn-outline"
-                      style={{ padding: '3px 8px', fontSize: '11px' }}
+                      style={{ padding: '4px 10px', fontSize: '13px' }}
                       onClick={e => {
                         e.stopPropagation();
                         onSelectBorrower(b.borrower_id);
@@ -234,34 +241,36 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
       </div>
 
       {/* Pagination Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-        <div>
-          Showing {items.length > 0 ? (page - 1) * pageSize + 1 : 0} to{' '}
-          {Math.min(page * pageSize, total)} of {total} borrowers
-        </div>
+      {total > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', fontSize: '14.5px', color: 'var(--text-secondary)' }}>
+          <div>
+            Showing {(page - 1) * pageSize + 1} to{' '}
+            {Math.min(page * pageSize, total)} of {total} borrowers
+          </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            className="btn btn-secondary"
-            style={{ padding: '4px 8px' }}
-            disabled={page <= 1}
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-          >
-            <ChevronLeft size={16} /> Previous
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            className="btn btn-secondary"
-            style={{ padding: '4px 8px' }}
-            disabled={page >= totalPages}
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-          >
-            Next <ChevronRight size={16} />
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px' }}
+              disabled={page <= 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+            >
+              <ChevronLeft size={18} /> Previous
+            </button>
+            <span style={{ fontWeight: 600 }}>
+              Page {page} of {totalPages}
+            </span>
+            <button
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px' }}
+              disabled={page >= totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            >
+              Next <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

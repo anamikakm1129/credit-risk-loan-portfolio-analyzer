@@ -213,3 +213,4 @@ def get_borrower_profile(
             "overall_repayment_rate": round((total_paid_all / total_due_all * 100.0) if total_due_all > 0 else 100.0, 1)
         }
     }
+

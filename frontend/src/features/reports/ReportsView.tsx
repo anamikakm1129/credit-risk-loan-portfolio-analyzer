@@ -208,3 +208,4 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reportingDate }) => {
     </div>
   );
 };
+

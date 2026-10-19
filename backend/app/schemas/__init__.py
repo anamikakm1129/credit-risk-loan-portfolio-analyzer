@@ -232,3 +232,4 @@ class DataQualitySummaryResponse(BaseModel):
     missing_required_fields_count: int
     invalid_numeric_values_count: int
     issues: List[DataQualityIssue]
+

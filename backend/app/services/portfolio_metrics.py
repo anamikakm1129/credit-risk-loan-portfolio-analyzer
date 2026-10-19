@@ -174,3 +174,4 @@ def _empty_summary(cutoff_date: date) -> Dict[str, Any]:
         "active_borrowers_count": 0,
         "active_rule_version": "v1.0"
     }
+

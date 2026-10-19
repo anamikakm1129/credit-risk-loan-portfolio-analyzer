@@ -132,3 +132,4 @@ class ReportRun(Base):
     metric_version = Column(String(20), default="v1.0")
     summary_json = Column(JSON, nullable=False)
     file_reference = Column(String(255), nullable=True)
+

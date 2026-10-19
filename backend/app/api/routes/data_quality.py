@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Response
 from sqlalchemy.orm import Session
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from backend.app.core.database import get_db
-from backend.app.models import Borrower, Loan, RepaymentSchedule, DataQualityRun
+from backend.app.models import Borrower, Loan, RepaymentSchedule, RepaymentTransaction, RiskAssessment, ReportRun, DataQualityRun, RiskRuleSet
 from backend.app.ingestion.csv_importer import import_portfolio_csvs
 
 router = APIRouter(prefix="/data-quality", tags=["Data Quality"])
@@ -15,7 +15,6 @@ def get_latest_data_quality_run(db: Session = Depends(get_db)):
     """
     latest = db.query(DataQualityRun).order_by(DataQualityRun.completed_at.desc()).first()
     if not latest:
-        # Run a diagnostic check on existing database
         return run_database_diagnostics(db)
 
     return {
@@ -149,3 +148,52 @@ async def upload_csv_files(
 
     result = import_portfolio_csvs(db, borrowers_csv_content=b_content, loans_csv_content=l_content)
     return result
+
+@router.get("/templates/borrowers.csv")
+def download_borrowers_template():
+    """
+    Returns a downloadable CSV template with standard column headers for borrowers.
+    """
+    csv_content = (
+        "borrower_id,full_name,annual_income,credit_score,monthly_debt_obligations,employment_status,home_ownership\n"
+        "BRW-1001,Johnathan Doe,85000,740,1650.00,Employed,MORTGAGE\n"
+        "BRW-1002,Jane Smith,95000,680,2100.00,Professional,RENT\n"
+        "BRW-1003,Alex Morgan,62000,590,1950.00,Self-Employed,RENT\n"
+    )
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=borrowers_template.csv"}
+    )
+
+@router.get("/templates/loans.csv")
+def download_loans_template():
+    """
+    Returns a downloadable CSV template with standard column headers for loans.
+    """
+    csv_content = (
+        "loan_id,borrower_id,principal_amount,issue_date,term_months,annual_rate,status,outstanding_principal,purpose\n"
+        "LN-2025-101,BRW-1001,25000,2025-01-15,36,0.079,Active,18500.00,Debt Consolidation\n"
+        "LN-2025-102,BRW-1002,15000,2025-03-10,24,0.115,Active,11200.00,Home Improvement\n"
+        "LN-2025-103,BRW-1003,12000,2025-05-20,36,0.185,Overdue,10500.00,Major Purchase\n"
+    )
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=loans_template.csv"}
+    )
+
+@router.post("/clear-portfolio")
+def clear_portfolio_data(db: Session = Depends(get_db)):
+    """
+    Wipes all borrower and loan data, leaving the schema and active rule configuration intact.
+    """
+    db.query(RepaymentTransaction).delete()
+    db.query(RepaymentSchedule).delete()
+    db.query(Loan).delete()
+    db.query(RiskAssessment).delete()
+    db.query(ReportRun).delete()
+    db.query(DataQualityRun).delete()
+    db.query(Borrower).delete()
+    db.commit()
+    return {"message": "All portfolio data cleared. Ready for fresh upload."}

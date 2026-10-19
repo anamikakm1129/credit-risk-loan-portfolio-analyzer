@@ -285,3 +285,4 @@ export const RiskAnalysisView: React.FC<RiskAnalysisViewProps> = ({ reportingDat
     </div>
   );
 };
+

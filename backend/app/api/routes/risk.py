@@ -120,3 +120,4 @@ def simulate_risk_rules(
             for band in ["Low", "Medium", "High", "Review Required"]
         ]
     }
+

@@ -138,3 +138,4 @@ def export_loans_to_csv(db: Session, cutoff_date: Optional[date] = None) -> str:
         ])
 
     return output.getvalue()
+

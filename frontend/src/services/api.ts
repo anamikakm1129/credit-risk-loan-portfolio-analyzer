@@ -96,3 +96,4 @@ export const api = {
   runDataQualityDiagnostics: () =>
     fetchJson<any>('/data-quality/run-diagnostics', { method: 'POST' }),
 };
+

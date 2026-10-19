@@ -86,3 +86,4 @@ def test_severely_delinquent_and_defaulted():
     assert res["overdue_amount"] == 300.0
     assert res["days_past_due"] == 104
     assert res["delinquency_stage"] == "Defaulted"
+

@@ -67,3 +67,4 @@ def calculate_loan_repayment_state(
         "delinquency_stage": delinquency_stage,
         "repayment_rate": round(min(100.0, repayment_rate), 2)
     }
+

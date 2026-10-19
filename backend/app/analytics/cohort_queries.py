@@ -185,3 +185,4 @@ def get_risk_segments_distribution(db: Session, cutoff_date: Optional[date] = No
         "total_exposure": round(total_exposure, 2),
         "segments": segments
     }
+

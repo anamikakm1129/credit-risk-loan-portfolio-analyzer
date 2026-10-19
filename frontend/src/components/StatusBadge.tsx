@@ -28,7 +28,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'risk' 
 
   return (
     <span className={`badge ${badgeClass}`} title={`${type}: ${status}`}>
-      <Icon size={12} strokeWidth={2.5} aria-hidden="true" />
+      <Icon size={14} strokeWidth={2.5} aria-hidden="true" />
       <span>{status}</span>
     </span>
   );

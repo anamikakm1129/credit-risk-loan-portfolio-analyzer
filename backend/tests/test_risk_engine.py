@@ -68,3 +68,4 @@ def test_deterministic_reproducibility():
     assert r1.risk_band == r2.risk_band
     assert r1.risk_score == r2.risk_score
     assert r1.reasons == r2.reasons
+

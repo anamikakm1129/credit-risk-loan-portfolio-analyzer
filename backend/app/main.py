@@ -62,3 +62,4 @@ def health_check():
         "database": "connected",
         "version": "1.0.0"
     }
+

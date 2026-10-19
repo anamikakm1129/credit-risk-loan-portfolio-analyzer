@@ -47,3 +47,4 @@ def get_dashboard_trends(
 
     trends = get_portfolio_monthly_trends(db, cutoff_date=cutoff)
     return {"monthly_trends": trends}
+

@@ -140,3 +140,4 @@ or double-click `run_dev.bat`.
 | **Repayment Rate** | $\frac{\text{Total Paid}}{\text{Total Scheduled Due}} \times 100$ | Cash realization vs schedule. |
 | **Debt-to-Income (DTI)** | $\frac{\text{Monthly Debt}}{\text{Monthly Gross Income}} \times 100$ | Standardized monthly frequency. |
 | **Vintage Default** | $\frac{\text{Cohort Defaults at Age } M}{\text{Cohort Population}}$ | Immature cohorts marked non-observable. |
+

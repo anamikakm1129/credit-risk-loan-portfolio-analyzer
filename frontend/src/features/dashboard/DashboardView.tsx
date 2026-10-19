@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { KPICard } from '../../components/KPICard';
 import { StatusBadge } from '../../components/StatusBadge';
-import { AlertTriangle, TrendingUp, ShieldCheck, ArrowRight, Info } from 'lucide-react';
+import { AlertTriangle, UploadCloud, ArrowRight, Plus } from 'lucide-react';
 
 interface DashboardViewProps {
   reportingDate: string;
@@ -51,17 +51,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   if (loading && !summary) {
     return (
       <div className="empty-state">
-        <div className="skeleton" style={{ height: '32px', width: '240px', marginBottom: '24px' }} />
+        <div className="skeleton" style={{ height: '36px', width: '280px', marginBottom: '28px' }} />
         <div className="kpi-grid">
           {[1, 2, 3, 4].map(n => (
-            <div key={n} className="skeleton" style={{ height: '110px' }} />
+            <div key={n} className="skeleton" style={{ height: '130px' }} />
           ))}
         </div>
-        <div className="skeleton" style={{ height: '300px' }} />
+        <div className="skeleton" style={{ height: '320px' }} />
       </div>
     );
   }
 
+  const isPortfolioEmpty = !summary || summary.total_loans?.value === 0;
   const maxTrendPrincipal = Math.max(...trends.map(t => t.outstanding_principal), 1000);
   const maxBandBorrowers = Math.max(...scoreBands.map(b => b.borrower_count), 1);
 
@@ -75,15 +76,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Consolidated credit risk indicators, exposure tracking, and segment health under Ruleset {summary?.active_rule_version || 'v1.0'}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn-secondary" onClick={() => onNavigate('reports')}>
             Generate Report
           </button>
-          <button className="btn btn-primary" onClick={() => onNavigate('risk-analysis')}>
-            Configure Risk Rules
+          <button className="btn btn-primary" onClick={() => onNavigate('data-quality')}>
+            <UploadCloud size={16} /> Upload Data
           </button>
         </div>
       </div>
+
+      {/* Empty State Banner when no data uploaded */}
+      {isPortfolioEmpty && (
+        <div className="card" style={{ marginBottom: '28px', border: '2px solid var(--accent-bronze)', background: 'var(--surface-subtle)', padding: '32px', textAlign: 'center' }}>
+          <UploadCloud size={48} color="var(--accent-bronze)" style={{ margin: '0 auto 14px' }} />
+          <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>
+            Ready for Your Portfolio Data
+          </h2>
+          <p style={{ fontSize: '16px', color: 'var(--text-secondary)', maxWidth: '640px', margin: '0 auto 20px', lineHeight: 1.6 }}>
+            All demo data has been cleared. Upload your borrower and loan CSV files to populate KPIs, credit score distributions, and risk segmentation.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '14px' }}>
+            <button className="btn btn-primary" style={{ padding: '10px 22px', fontSize: '15.5px' }} onClick={() => onNavigate('data-quality')}>
+              <UploadCloud size={18} /> Go to Data Upload Portal
+            </button>
+            <a
+              href="/api/v1/data-quality/templates/borrowers.csv"
+              download="borrowers_template.csv"
+              className="btn btn-secondary"
+              style={{ padding: '10px 20px', fontSize: '15.5px', textDecoration: 'none' }}
+            >
+              Download Sample CSV
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* PRD F-01: 4 Core Headline KPI Cards */}
       <div className="kpi-grid">
@@ -133,20 +160,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Secondary Quick Metrics Strip */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+      <div style={{ display: 'flex', gap: '18px', marginBottom: '28px', flexWrap: 'wrap' }}>
+        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14.5px' }}>
           <span style={{ color: 'var(--text-muted)' }}>Repayment Collection Rate:</span>
           <strong style={{ color: 'var(--status-green)' }}>{summary.repayment_rate.formatted_value}</strong>
         </div>
-        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14.5px' }}>
           <span style={{ color: 'var(--text-muted)' }}>Weighted Avg DTI:</span>
           <strong>{summary.weighted_avg_dti.formatted_value}</strong>
         </div>
-        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14.5px' }}>
           <span style={{ color: 'var(--text-muted)' }}>Weighted Avg Credit Score:</span>
           <strong>{summary.weighted_avg_credit_score.formatted_value}</strong>
         </div>
-        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '10px 16px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+        <div style={{ background: 'var(--surface-card)', border: '1px solid var(--border-color)', padding: '12px 18px', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14.5px' }}>
           <span style={{ color: 'var(--text-muted)' }}>Active Borrowers in Scope:</span>
           <strong>{summary.active_borrowers_count}</strong>
         </div>
@@ -162,30 +189,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="card-subtitle">Outstanding balance ($) across cohorts</div>
             </div>
           </div>
-          <div style={{ height: '180px', display: 'flex', alignItems: 'flex-end', gap: '12px', padding: '10px 0' }}>
-            {trends.slice(-8).map((t, idx) => {
-              const heightPct = Math.round((t.outstanding_principal / maxTrendPrincipal) * 100);
-              return (
-                <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                  <div
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(180deg, #9C7A4A 0%, #B8925A 100%)',
-                      height: `${Math.max(8, heightPct)}%`,
-                      borderRadius: '4px 4px 0 0',
-                      transition: 'height 0.3s ease',
-                    }}
-                    title={`${t.period}: $${t.outstanding_principal.toLocaleString()} outstanding, ${t.loan_count} loans`}
-                  />
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px' }}>
-                    {t.period.slice(2)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px' }}>
-            Hover bars for monthly cohort balance & count
+          {trends.length === 0 ? (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '14.5px' }}>
+              No cohort data yet. Upload loans CSV to view trends.
+            </div>
+          ) : (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'flex-end', gap: '14px', padding: '10px 0' }}>
+              {trends.slice(-8).map((t, idx) => {
+                const heightPct = Math.round((t.outstanding_principal / maxTrendPrincipal) * 100);
+                return (
+                  <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                    <div
+                      style={{
+                        width: '100%',
+                        background: 'linear-gradient(180deg, #9C7A4A 0%, #B8925A 100%)',
+                        height: `${Math.max(8, heightPct)}%`,
+                        borderRadius: '6px 6px 0 0',
+                        transition: 'height 0.3s ease',
+                      }}
+                      title={`${t.period}: $${t.outstanding_principal.toLocaleString()} outstanding, ${t.loan_count} loans`}
+                    />
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px', fontWeight: 500 }}>
+                      {t.period.slice(2)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '10px' }}>
+            Monthly cohort balance & origination activity
           </div>
         </div>
 
@@ -197,30 +230,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="card-subtitle">Borrowers per score classification</div>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: '180px', justifyContent: 'center' }}>
-            {scoreBands.map((sb, idx) => {
-              const widthPct = Math.round((sb.borrower_count / maxBandBorrowers) * 100);
-              return (
-                <div key={idx}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', marginBottom: '3px' }}>
-                    <span style={{ fontWeight: 500 }}>{sb.band_name.split(' ')[0]}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>{sb.borrower_count} ({sb.default_rate}% def)</span>
+          {scoreBands.every(sb => sb.borrower_count === 0) ? (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '14.5px' }}>
+              No credit score distributions to display.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '200px', justifyContent: 'center' }}>
+              {scoreBands.map((sb, idx) => {
+                const widthPct = Math.round((sb.borrower_count / maxBandBorrowers) * 100);
+                return (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 600 }}>{sb.band_name.split(' ')[0]}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>{sb.borrower_count} ({sb.default_rate}% def)</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'var(--surface-subtle)', height: '9px', borderRadius: '5px', overflow: 'hidden' }}>
+                      <div
+                        style={{
+                          width: `${widthPct}%`,
+                          height: '100%',
+                          background: idx < 2 ? 'var(--status-green)' : (idx === 2 ? 'var(--status-amber)' : 'var(--status-red)'),
+                          borderRadius: '5px',
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div style={{ width: '100%', background: 'var(--surface-subtle)', height: '7px', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div
-                      style={{
-                        width: `${widthPct}%`,
-                        height: '100%',
-                        background: idx < 2 ? 'var(--status-green)' : (idx === 2 ? 'var(--status-amber)' : 'var(--status-red)'),
-                        borderRadius: '4px',
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px' }}>
+                );
+              })}
+            </div>
+          )}
+          <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '10px' }}>
             FICO score ranges: 300 to 850
           </div>
         </div>
@@ -232,27 +271,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <h2 className="card-title">Risk Segmentation Share</h2>
               <div className="card-subtitle">Rule v1.0 exposure allocation</div>
             </div>
-            <button className="btn btn-outline" style={{ padding: '2px 8px', fontSize: '11px' }} onClick={() => onNavigate('risk-analysis')}>
+            <button className="btn btn-outline" style={{ padding: '3px 10px', fontSize: '13px' }} onClick={() => onNavigate('risk-analysis')}>
               View All
             </button>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '180px', justifyContent: 'center' }}>
-            {riskSegments?.segments?.map((seg: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <StatusBadge status={seg.risk_band} type="risk" />
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    {seg.borrower_count} borrowers
-                  </span>
+          {riskSegments?.total_borrowers === 0 ? (
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '14.5px' }}>
+              Upload borrowers to trigger risk rules.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', height: '200px', justifyContent: 'center' }}>
+              {riskSegments?.segments?.map((seg: any, idx: number) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <StatusBadge status={seg.risk_band} type="risk" />
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+                      {seg.borrower_count} borrowers
+                    </span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 700 }}>${(seg.total_exposure / 1000).toFixed(0)}k</div>
+                    <div style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{seg.exposure_share_pct}% share</div>
+                  </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600 }}>${(seg.total_exposure / 1000).toFixed(0)}k</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{seg.exposure_share_pct}% share</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '8px' }}>
+              ))}
+            </div>
+          )}
+          <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '10px' }}>
             Deterministic rule segmentation — not opaque ML
           </div>
         </div>
@@ -264,14 +309,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="card">
           <div className="card-header">
             <div>
-              <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertTriangle size={16} color="var(--status-red)" />
+              <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <AlertTriangle size={18} color="var(--status-red)" />
                 High-Risk Borrowers Requiring Attention
               </h2>
-              <div className="card-subtitle">Borrowers flagged by elevated DTI, score, or overdue payments</div>
+              <div className="card-subtitle">Flagged by elevated DTI, score, or overdue payments</div>
             </div>
-            <button className="btn btn-outline" style={{ fontSize: '12px', padding: '4px 10px' }} onClick={() => onNavigate('borrowers')}>
-              Full Directory <ArrowRight size={12} />
+            <button className="btn btn-outline" style={{ fontSize: '13.5px', padding: '5px 12px' }} onClick={() => onNavigate('borrowers')}>
+              Full Directory <ArrowRight size={14} />
             </button>
           </div>
 
@@ -288,20 +333,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {highRiskBorrowers.map((b: any) => (
+                {highRiskBorrowers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)', fontSize: '14.5px' }}>
+                      No high-risk borrowers recorded.
+                    </td>
+                  </tr>
+                ) : highRiskBorrowers.map((b: any) => (
                   <tr key={b.borrower_id} style={{ cursor: 'pointer' }} onClick={() => onSelectBorrower(b.borrower_id)}>
                     <td>
-                      <div style={{ fontWeight: 600 }}>{b.borrower_id}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{b.full_name}</div>
+                      <div style={{ fontWeight: 700 }}>{b.borrower_id}</div>
+                      <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{b.full_name}</div>
                     </td>
                     <td>{b.credit_score ?? 'Missing'}</td>
                     <td>{b.dti_ratio ? `${b.dti_ratio}%` : '—'}</td>
-                    <td style={{ fontWeight: 600 }}>${b.total_exposure.toLocaleString()}</td>
-                    <td style={{ color: b.total_overdue > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 600 }}>
+                    <td style={{ fontWeight: 700 }}>${b.total_exposure.toLocaleString()}</td>
+                    <td style={{ color: b.total_overdue > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 700 }}>
                       ${b.total_overdue.toLocaleString()}
                     </td>
                     <td>
-                      <button className="btn btn-outline" style={{ padding: '3px 8px', fontSize: '11px' }}>
+                      <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '13px' }}>
                         Profile
                       </button>
                     </td>
@@ -317,10 +368,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="card-header">
             <div>
               <h2 className="card-title">Recent Loan Originations</h2>
-              <div className="card-subtitle">Latest issued loans across the portfolio</div>
+              <div className="card-subtitle">Latest issued facilities across the portfolio</div>
             </div>
-            <button className="btn btn-outline" style={{ fontSize: '12px', padding: '4px 10px' }} onClick={() => onNavigate('loans')}>
-              All Loans <ArrowRight size={12} />
+            <button className="btn btn-outline" style={{ fontSize: '13.5px', padding: '5px 12px' }} onClick={() => onNavigate('loans')}>
+              All Loans <ArrowRight size={14} />
             </button>
           </div>
 
@@ -337,17 +388,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {recentLoans.map((l: any) => (
+                {recentLoans.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)', fontSize: '14.5px' }}>
+                      No loan facilities in database. Upload loans CSV to begin.
+                    </td>
+                  </tr>
+                ) : recentLoans.map((l: any) => (
                   <tr key={l.loan_id} style={{ cursor: 'pointer' }} onClick={() => onSelectLoan(l.loan_id)}>
-                    <td style={{ fontWeight: 600 }}>{l.loan_id}</td>
+                    <td style={{ fontWeight: 700 }}>{l.loan_id}</td>
                     <td>{l.borrower_name}</td>
-                    <td style={{ fontWeight: 600 }}>${l.principal_amount.toLocaleString()}</td>
+                    <td style={{ fontWeight: 700 }}>${l.principal_amount.toLocaleString()}</td>
                     <td>{(l.annual_rate * 100).toFixed(1)}%</td>
                     <td>
                       <StatusBadge status={l.status} type="loan" />
                     </td>
                     <td>
-                      <button className="btn btn-outline" style={{ padding: '3px 8px', fontSize: '11px' }}>
+                      <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '13px' }}>
                         Details
                       </button>
                     </td>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { StatusBadge } from '../../components/StatusBadge';
-import { Search, RotateCcw, ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
+import { Search, RotateCcw, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 
 interface LoansViewProps {
   reportingDate: string;
@@ -94,8 +94,8 @@ export const LoansView: React.FC<LoansViewProps> = ({
 
       {/* Filter Bar */}
       <form onSubmit={handleSearchSubmit} className="filter-bar">
-        <div className="filter-group" style={{ flex: 1, minWidth: '220px' }}>
-          <Search size={15} color="var(--text-muted)" />
+        <div className="filter-group" style={{ flex: 1, minWidth: '240px' }}>
+          <Search size={18} color="var(--text-muted)" />
           <input
             type="text"
             placeholder="Search loan ID, borrower ID, or name..."
@@ -140,12 +140,12 @@ export const LoansView: React.FC<LoansViewProps> = ({
           </select>
         </div>
 
-        <button type="submit" className="btn btn-primary" style={{ padding: '6px 12px' }}>
+        <button type="submit" className="btn btn-primary">
           Apply
         </button>
 
-        <button type="button" className="btn btn-outline" style={{ padding: '6px 12px' }} onClick={handleReset} title="Reset filters">
-          <RotateCcw size={14} /> Reset
+        <button type="button" className="btn btn-outline" onClick={handleReset} title="Reset filters">
+          <RotateCcw size={16} /> Reset
         </button>
       </form>
 
@@ -181,24 +181,29 @@ export const LoansView: React.FC<LoansViewProps> = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={10} style={{ textAlign: 'center', padding: '32px' }}>
-                  <div className="skeleton" style={{ height: '24px', width: '200px', margin: '0 auto 8px' }} />
-                  <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Loading loans...</div>
+                <td colSpan={10} style={{ textAlign: 'center', padding: '40px' }}>
+                  <div className="skeleton" style={{ height: '28px', width: '220px', margin: '0 auto 10px' }} />
+                  <div style={{ color: 'var(--text-muted)', fontSize: '15px' }}>Loading loans...</div>
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={10} style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)' }}>
-                  No loans found matching current filter criteria.
+                <td colSpan={10} style={{ textAlign: 'center', padding: '56px', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
+                    No loan facilities in database
+                  </div>
+                  <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginBottom: '18px' }}>
+                    Upload your loans CSV file via the Data Quality portal to populate the facilities ledger.
+                  </p>
                 </td>
               </tr>
             ) : (
               items.map((l: any) => (
                 <tr key={l.loan_id} style={{ cursor: 'pointer' }} onClick={() => onSelectLoan(l.loan_id)}>
-                  <td style={{ fontWeight: 600 }}>{l.loan_id}</td>
+                  <td style={{ fontWeight: 700 }}>{l.loan_id}</td>
                   <td>
                     <span
-                      style={{ color: 'var(--accent-bronze)', fontWeight: 500 }}
+                      style={{ color: 'var(--accent-bronze)', fontWeight: 600 }}
                       onClick={e => {
                         e.stopPropagation();
                         onSelectBorrower(l.borrower_id);
@@ -208,18 +213,18 @@ export const LoansView: React.FC<LoansViewProps> = ({
                       {l.borrower_name}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600 }}>${l.principal_amount.toLocaleString()}</td>
+                  <td style={{ fontWeight: 700 }}>${l.principal_amount.toLocaleString()}</td>
                   <td>{l.issue_date}</td>
                   <td>
                     {l.term_months}m @ {(l.annual_rate * 100).toFixed(1)}%
                   </td>
-                  <td style={{ fontWeight: 600 }}>${l.outstanding_principal.toLocaleString()}</td>
-                  <td style={{ color: l.overdue_amount > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 600 }}>
+                  <td style={{ fontWeight: 700 }}>${l.outstanding_principal.toLocaleString()}</td>
+                  <td style={{ color: l.overdue_amount > 0 ? 'var(--status-red)' : 'inherit', fontWeight: 700 }}>
                     ${l.overdue_amount.toLocaleString()}
                   </td>
                   <td>
                     {l.days_past_due > 0 ? (
-                      <span style={{ color: 'var(--status-red)', fontWeight: 600 }}>{l.days_past_due}d</span>
+                      <span style={{ color: 'var(--status-red)', fontWeight: 700 }}>{l.days_past_due}d</span>
                     ) : (
                       '0d'
                     )}
@@ -238,34 +243,36 @@ export const LoansView: React.FC<LoansViewProps> = ({
       </div>
 
       {/* Pagination Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-        <div>
-          Showing {items.length > 0 ? (page - 1) * pageSize + 1 : 0} to{' '}
-          {Math.min(page * pageSize, total)} of {total} loans
-        </div>
+      {total > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', fontSize: '14.5px', color: 'var(--text-secondary)' }}>
+          <div>
+            Showing {(page - 1) * pageSize + 1} to{' '}
+            {Math.min(page * pageSize, total)} of {total} loans
+          </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            className="btn btn-secondary"
-            style={{ padding: '4px 8px' }}
-            disabled={page <= 1}
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-          >
-            <ChevronLeft size={16} /> Previous
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            className="btn btn-secondary"
-            style={{ padding: '4px 8px' }}
-            disabled={page >= totalPages}
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-          >
-            Next <ChevronRight size={16} />
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px' }}
+              disabled={page <= 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+            >
+              <ChevronLeft size={18} /> Previous
+            </button>
+            <span style={{ fontWeight: 600 }}>
+              Page {page} of {totalPages}
+            </span>
+            <button
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px' }}
+              disabled={page >= totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            >
+              Next <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
