@@ -31,6 +31,29 @@ except ModuleNotFoundError:
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
 
+def init_db_defaults():
+    try:
+        from backend.app.core.database import SessionLocal
+        from backend.app.models import RiskRuleSet
+        from backend.app.services.risk_rules import DEFAULT_RULE_SET
+        from datetime import date
+        with SessionLocal() as db:
+            if not db.query(RiskRuleSet).filter(RiskRuleSet.active == True).first():
+                rule = RiskRuleSet(
+                    rule_set_id="RRS-V1.0",
+                    version="1.0",
+                    effective_from=date(2024, 1, 1),
+                    configuration=DEFAULT_RULE_SET.to_dict(),
+                    active=True,
+                    description="Default Production Risk Scoring Policy v1.0"
+                )
+                db.add(rule)
+                db.commit()
+    except Exception as e:
+        print(f"Notice: initial rules check: {e}")
+
+init_db_defaults()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="CredVista — Credit Risk & Loan Portfolio Intelligence Platform API",
