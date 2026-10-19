@@ -28,14 +28,18 @@ except ModuleNotFoundError:
         dashboard, borrowers, loans, repayments, risk, analysis, reports, data_quality
     )
 
-# Initialize database tables
-Base.metadata.create_all(bind=engine)
+db_status_msg = "connected"
 
 def init_db_defaults():
     try:
-        from backend.app.core.database import SessionLocal
-        from backend.app.models import RiskRuleSet
-        from backend.app.services.risk_rules import DEFAULT_RULE_SET
+        try:
+            from backend.app.core.database import SessionLocal
+            from backend.app.models import RiskRuleSet
+            from backend.app.services.risk_rules import DEFAULT_RULE_SET
+        except ImportError:
+            from app.core.database import SessionLocal
+            from app.models import RiskRuleSet
+            from app.services.risk_rules import DEFAULT_RULE_SET
         from datetime import date
         with SessionLocal() as db:
             if not db.query(RiskRuleSet).filter(RiskRuleSet.active == True).first():
@@ -52,7 +56,20 @@ def init_db_defaults():
     except Exception as e:
         print(f"Notice: initial rules check: {e}")
 
-init_db_defaults()
+def init_db():
+    global db_status_msg
+    try:
+        Base.metadata.create_all(bind=engine)
+        init_db_defaults()
+        db_status_msg = "connected"
+        print("Database connected and tables initialized successfully.")
+    except Exception as e:
+        db_status_msg = f"Database connection warning: {e}"
+        print(f"DATABASE INITIALIZATION WARNING: {e}")
+        print("Tip: If using Supabase on Render, use IPv4 pooler URI: aws-0-ap-northeast-1.pooler.supabase.com:5432 with username postgres.telbaduznhrtbjmzvbwu")
+
+init_db()
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -93,7 +110,7 @@ def root():
 @app.get("/api/v1/health")
 def health_check():
     return {
-        "status": "healthy",
-        "database": "connected",
+        "status": "healthy" if db_status_msg == "connected" else "degraded",
+        "database": db_status_msg,
         "version": "1.0.0"
     }
