@@ -1,0 +1,271 @@
+C R E D V I S T A
+
+Product Features & UX Specification
+
+A calm, premium workspace for credit risk and loan portfolio intelligence
+
+FEATURES DOCUMENT  •  Version 1.0  •  19 October 2026
+
+1. Product vision
+
+CredVista turns loan and repayment data into clear portfolio insights. It helps lending teams understand exposure, spot repayment stress, compare borrower segments and review loan performance without overwhelming users with dense charts or complicated workflows.
+
+2. UX principles
+
+Premium, calm visual language: warm ivory backgrounds, charcoal navigation, muted bronze accents, restrained green/amber/red status colours and generous whitespace.
+
+One clear primary task per screen. Keep the dashboard focused on the portfolio summary; move detailed investigation to dedicated pages.
+
+Progressive disclosure: show the essential metric first, with filters, explanations and deeper tables available when needed.
+
+Readable typography and consistent spacing. Avoid tiny labels, overpacked cards, excessive charts and decorative elements that compete with data.
+
+Explainable risk: every rule-based risk label should show the rule or factors that caused it.
+
+Responsive layout: desktop-first analytics with a usable tablet and mobile summary experience.
+
+3. Navigation and information architecture
+
+Area
+
+Purpose
+
+Primary user actions
+
+Dashboard
+
+Portfolio health at a glance
+
+Review KPIs, trends, risk distribution and recent activity
+
+Borrowers
+
+Searchable borrower directory
+
+Filter, inspect profiles, review DTI, score band, risk band and repayment status
+
+Loans
+
+Loan-level operational view
+
+Search loans, review principal, issue date, outstanding amount and status
+
+Repayments
+
+Payment performance
+
+Review scheduled vs paid instalments, overdue days and repayment history
+
+Risk Analysis
+
+Portfolio risk exploration
+
+Compare risk bands, default trends, risk drivers and exposure
+
+Vintage Analysis
+
+Cohort performance over time
+
+Compare origination-month cohorts at defined loan ages
+
+Reports
+
+Exportable analysis
+
+Generate and download summary reports
+
+Settings
+
+Configuration and data definitions
+
+Manage risk rules, thresholds, reporting defaults and access settings
+
+4. Core features
+
+F-01 Dashboard overview
+
+Show total loans, outstanding principal, default rate and overdue amount as four clear KPI cards. Add portfolio trend, credit-score distribution, risk segmentation, vintage snapshot, top high-risk borrowers and recent loan activity. Each chart should answer one question and provide a short explanation.
+
+F-02 Borrower directory
+
+Provide search by borrower name or ID, plus filters for risk band, credit-score range, DTI range and status. Use a compact, sortable table with pagination. Row actions open a borrower detail page; do not overload the table with every available field.
+
+F-03 Borrower profile
+
+Show key identity/reference fields, income, credit score, DTI, active loans, outstanding amount, overdue amount, repayment summary and risk factors. Include a plain-language risk explanation and links to related loans and repayment history.
+
+F-04 Loan management view
+
+List loan ID, borrower, principal amount, issue date, term, DTI snapshot, outstanding principal, status and risk band. Support search, filters, sorting, pagination and loan detail drill-down.
+
+F-05 Repayment performance
+
+Track due amount, paid amount, overdue amount, payment date, days past due and repayment status. Clearly distinguish late payment, delinquency and default using configured definitions.
+
+F-06 Explainable risk segmentation
+
+Assign Low, Medium or High risk using configurable, documented rules based on approved inputs such as DTI, credit-score band and repayment indicators. Display contributing factors and rule version. Do not present a rules engine as a machine-learning prediction.
+
+F-07 Portfolio metrics
+
+Calculate default rate, overdue amount, repayment rate, outstanding exposure and risk-band distribution using documented denominators and reporting dates.
+
+F-08 Vintage and cohort analysis
+
+Group loans by origination month and compare outcomes at loan age milestones such as month 1, 3, 6, 9 and 12. Show unavailable or immature cohorts as blank/not yet observable, not as zero.
+
+F-09 Credit-score comparison
+
+Compare counts, exposure, overdue balances and default rates across configurable credit-score bands. Allow users to change the reporting period and inspect the underlying cohort.
+
+F-10 Reports and exports
+
+Generate a portfolio summary and supporting borrower/loan tables. Exports should include filters, reporting date, metric definitions and generation timestamp.
+
+F-11 Global search and date filter
+
+Provide one global search for borrower ID, loan ID or borrower name and a consistent reporting-date selector across analytical pages.
+
+F-12 Data quality feedback
+
+Show import/refresh status, missing-field counts, duplicate IDs, invalid dates and records excluded from a metric. Never silently hide material data-quality problems.
+
+5. Dashboard layout recommendation
+
+Header: page title, reporting period, global search, notification indicator and profile menu.
+
+Left navigation: Dashboard, Borrowers, Loans, Repayments, Risk Analysis, Vintage Analysis, Reports and Settings.
+
+Top row: four KPI cards only—Total Loans, Outstanding Principal, Default Rate and Overdue Amount.
+
+Middle row: portfolio trend, credit-score distribution and risk segmentation. Keep chart legends short and labels readable.
+
+Lower row: vintage snapshot plus two compact tables—Top High-Risk Borrowers and Recent Loan Activity.
+
+Details live on their own pages. Avoid putting full borrower tables, all filters and all charts on the dashboard.
+
+6. Visual design system
+
+Token
+
+Recommendation
+
+Usage
+
+Canvas
+
+Warm ivory / off-white
+
+Main application background
+
+Navigation
+
+Charcoal / deep brown
+
+Sidebar and high-contrast navigation
+
+Accent
+
+Muted bronze / sand
+
+Primary action, highlights and selected states
+
+Success
+
+Muted green
+
+Healthy/on-time/active states
+
+Warning
+
+Amber
+
+Medium risk or review required
+
+Critical
+
+Muted red
+
+High risk, overdue or default states
+
+Cards
+
+White or very light warm neutral
+
+KPI and chart surfaces with subtle borders
+
+Typography
+
+Clean sans-serif with restrained serif display headings
+
+Clear data reading and premium brand character
+
+Spacing
+
+Consistent 8-point spacing scale
+
+Avoid clutter and inconsistent density
+
+7. Usability and accessibility
+
+Use labels alongside colour; risk status must never be conveyed by colour alone.
+
+Support keyboard navigation, visible focus states, readable contrast and accessible chart summaries.
+
+Use explicit empty, loading, error and no-results states.
+
+Confirm before destructive actions; use clear success/error feedback for exports and data refreshes.
+
+Show definitions on hover or in a small info panel for DTI, default rate, overdue amount and vintage metrics.
+
+Use sensible defaults and keep filters visible but compact. Provide a clear 'Reset filters' action.
+
+8. MVP scope and later enhancements
+
+MVP (required)
+
+Later / optional
+
+Dashboard KPIs and core charts
+
+Custom dashboard builder
+
+Borrower and loan searchable tables
+
+Bulk workflow actions
+
+Borrower detail and risk explanation
+
+Advanced audit and approval workflow
+
+Rule-based risk segmentation
+
+Validated ML-based default prediction
+
+Repayment and default metrics
+
+Alerts and scheduled reporting
+
+Vintage/cohort and score-band comparisons
+
+Scenario simulation and stress testing
+
+CSV/report export and data-quality checks
+
+External integrations and automated ingestion
+
+9. Acceptance checklist
+
+Users can reach every primary area from a consistent sidebar.
+
+Dashboard answers portfolio health questions without requiring users to open multiple pages.
+
+Every risk band is backed by a visible, versioned rule and explanation.
+
+Filters apply consistently and are reflected in the displayed report/export.
+
+Metric definitions, denominators, reporting dates and treatment of missing data are documented.
+
+Tables remain readable and usable with pagination on realistic data volumes.
+
+Empty, loading, failure and permission states are designed rather than left blank.

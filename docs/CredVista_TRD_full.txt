@@ -1,0 +1,335 @@
+C R E D V I S T A
+
+Technical Requirements Document
+
+Implementation architecture, data model, APIs, analytics and quality controls
+
+TRD  •  Version 1.0  •  19 October 2026
+
+1. Technical overview
+
+The architecture should remain intentionally simple and modular. Recommended MVP stack: React + TypeScript for the frontend, FastAPI for the Python backend, PostgreSQL for relational storage, pandas for controlled data preparation/analysis, and SQL for aggregations and reporting. This is a proposed stack, not a claim that an existing repository already uses it.
+
+2. Logical architecture
+
+Layer
+
+Responsibility
+
+Suggested implementation
+
+Presentation
+
+Navigation, tables, filters, charts, details and report actions
+
+React + TypeScript; reusable components; a restrained charting library
+
+API / application
+
+Validation, authorization, orchestration, pagination and response shaping
+
+FastAPI; Pydantic schemas; service layer
+
+Domain logic
+
+DTI calculations, metric definitions and deterministic risk rules
+
+Python modules with pure functions and unit tests
+
+Analytics / query
+
+Portfolio summaries, cohorts, rankings and grouped comparisons
+
+PostgreSQL SQL; pandas for import/validation or analysis that benefits from it
+
+Persistence
+
+Borrowers, loans, repayment events, rules and report metadata
+
+PostgreSQL with keys, constraints and indexes
+
+Data import
+
+CSV ingestion, validation, deduplication and quality summary
+
+Pandas-based import pipeline with explicit validation results
+
+Testing / operations
+
+Automated tests, logs, migrations and deployment checks
+
+pytest, API tests, database migrations, structured logs and environment-based configuration
+
+3. Suggested repository structure
+
+credvista/  frontend/    src/      app/      components/      features/        dashboard/        borrowers/        loans/        repayments/        risk-analysis/        vintage-analysis/        reports/      services/      types/      styles/  backend/    app/      main.py      api/        routes/      core/        config.py        security.py      schemas/      models/      repositories/      services/        portfolio_metrics.py        risk_rules.py        repayment_analysis.py        vintage_analysis.py        report_service.py      analytics/        cohort_queries.py      ingestion/        csv_importer.py        validation.py    tests/  database/    migrations/    seeds/    queries/  docs/    features.md    prd.md    trd.md  .env.example  README.md
+
+4. Data model
+
+Entity
+
+Important fields
+
+Notes / relationships
+
+borrowers
+
+borrower_id (PK), full_name/reference_name, annual_income, credit_score, created_at
+
+One borrower can have multiple loans; keep personal data to the minimum needed
+
+loans
+
+loan_id (PK), borrower_id (FK), principal_amount, issue_date, term_months, annual_rate, status, outstanding_principal
+
+Borrower FK; store dates and monetary values with appropriate precision
+
+repayment_schedule
+
+schedule_id (PK), loan_id (FK), due_date, scheduled_amount, principal_due, interest_due
+
+One loan has many scheduled instalments
+
+repayment_transactions
+
+payment_id (PK), loan_id (FK), schedule_id (nullable FK), payment_date, amount, payment_status, reference
+
+Supports partial payments, late payments and payment reconciliation
+
+risk_rule_sets
+
+rule_set_id (PK), version, effective_from, effective_to, configuration, active
+
+Rules must be versioned and reproducible
+
+risk_assessments
+
+assessment_id (PK), borrower_id or loan_id, assessed_at, rule_set_id (FK), risk_band, factors_json
+
+Choose borrower-level or loan-level assessment explicitly; avoid ambiguous scope
+
+data_quality_runs
+
+run_id (PK), started_at, completed_at, records_read, records_rejected, issue_summary
+
+Tracks import/refresh quality and status
+
+report_runs
+
+report_id (PK), generated_at, user_id, period_start, period_end, filters_json, metric_version, file_reference
+
+Supports reproducibility and auditability
+
+5. Data and calculation rules
+
+Use DECIMAL/NUMERIC for currency and explicit currency/rounding conventions; do not use binary floating point as the database currency type.
+
+Store timestamps consistently (UTC internally where timestamps are used) and define the reporting timezone for date boundaries.
+
+Validate unique primary IDs, foreign-key integrity, non-negative amounts where appropriate, valid dates and allowed status values.
+
+Normalize annual income to monthly income only where assumptions are documented; DTI requires gross monthly income and monthly debt obligations on a consistent basis.
+
+Compute overdue amount from unpaid amounts whose due dates are before or on the reporting cutoff, using the agreed partial-payment allocation rule.
+
+Define default status and observation window explicitly; delinquency or one missed payment should not automatically be treated as default unless the chosen policy says so.
+
+Keep SQL aggregations and Python metric definitions consistent; test both against known fixtures.
+
+Do not treat missing data as zero. Return a missing/unknown state or exclude it according to a documented metric policy.
+
+6. Risk rules engine
+
+Implement the MVP as a deterministic service. Inputs should be a validated feature object; outputs should include risk_band, reason_codes, human-readable explanation, rule_set_version and missing_inputs. Keep thresholds in configuration or database records and validate that bands do not overlap unintentionally.
+
+Illustrative pseudocode
+
+def assess_risk(features, rules):    if features.has_critical_missing_inputs:        return Assessment(            band="Review Required",            reasons=["Required income/score/repayment data missing"],            rule_version=rules.version,        )    reasons = []    score = 0    if features.dti_pct >= rules.high_dti_pct:        score += rules.high_dti_weight        reasons.append("High debt-to-income ratio")    if features.credit_score < rules.low_score_threshold:        score += rules.low_score_weight        reasons.append("Credit score below configured threshold")    if features.overdue_days >= rules.overdue_days_threshold:        score += rules.overdue_weight        reasons.append("Repayment overdue")    band = rules.map_score_to_band(score)    return Assessment(band=band, reasons=reasons, rule_version=rules.version)
+
+The scoring weights and thresholds above are placeholders. They must be calibrated to the project’s chosen policy and test dataset before use.
+
+7. API requirements
+
+Method / endpoint
+
+Purpose
+
+Key behavior
+
+GET /api/v1/dashboard/summary
+
+KPI cards and summary metrics
+
+Accept reporting period; return definitions/metadata with metrics
+
+GET /api/v1/dashboard/trends
+
+Monthly trend series
+
+Return consistent date buckets and explicit nulls for unavailable values
+
+GET /api/v1/borrowers
+
+Borrower directory
+
+Search, filters, sort allowlist, page and page_size
+
+GET /api/v1/borrowers/{borrower_id}
+
+Borrower profile
+
+Return profile, risk explanation and summary; enforce access checks
+
+GET /api/v1/loans
+
+Loan directory
+
+Search, filters, sort and pagination
+
+GET /api/v1/loans/{loan_id}
+
+Loan detail
+
+Return loan details and repayment summary
+
+GET /api/v1/loans/{loan_id}/repayments
+
+Repayment history
+
+Paginated events and schedule status
+
+GET /api/v1/risk/segments
+
+Risk distribution and drivers
+
+Return counts and exposure with clear denominators
+
+GET /api/v1/analysis/vintage
+
+Vintage/cohort matrix
+
+Require metric, origination range and loan-age buckets
+
+GET /api/v1/analysis/credit-score-bands
+
+Score-band comparison
+
+Return band definitions and metrics
+
+POST /api/v1/reports
+
+Create report/export
+
+Validate requested filters and record report metadata
+
+GET /api/v1/data-quality/latest
+
+Latest ingestion/quality status
+
+Distinguish success, partial success and failure
+
+8. Query and analytics expectations
+
+Use parameterized SQL for all dynamic values; allowlist sort columns and directions.
+
+Use GROUP BY for segment summaries, CASE for explicit band mapping when appropriate, JOINs for borrower/loan/repayment linkage, and window functions for ranking or cumulative trends.
+
+Apply pagination at the database/API layer rather than downloading the full table to the browser.
+
+Create indexes for commonly searched IDs, borrower name where supported, loan issue date, status, borrower foreign keys and repayment due/payment dates.
+
+Vintage queries must align cohort start dates, observation cutoffs and loan age. Do not compare cohorts at unequal ages without a clear label.
+
+Add query plans and indexes only after observing realistic query patterns; avoid premature complexity.
+
+9. Frontend implementation rules
+
+Use a shared app shell: fixed or collapsible sidebar, compact top bar, page title, date range and profile menu.
+
+Build reusable KPI cards, filter bars, data tables, risk badges, empty states, chart containers and explanation panels.
+
+Use one spacing scale and design tokens for canvas, surfaces, typography, borders, radii and semantic status colours.
+
+Keep the dashboard to four main KPIs and a small number of charts; use dedicated pages for deep analysis.
+
+Show chart tooltips, axis labels, readable legends and text summaries. Do not rely on colour alone.
+
+Synchronize URL/query state for shareable filters where practical; ensure reset and pagination behavior are predictable.
+
+Use skeleton/loading states and user-readable errors; never show stale data as fresh without a timestamp.
+
+10. Security and privacy
+
+Enforce authentication and authorization on the server, not only by hiding frontend controls.
+
+Validate all request parameters and imported files; cap upload size and reject unexpected file formats.
+
+Store secrets in environment/secret management; commit only .env.example with dummy values.
+
+Use least-privilege database credentials and parameterized queries.
+
+Mask or minimize personal data in logs; protect exported files and define retention expectations.
+
+Use synthetic or de-identified demo data and avoid publishing real borrower records in screenshots or repositories.
+
+Log sensitive administrative changes and access-relevant events without logging secrets or unnecessary personal information.
+
+11. Testing strategy
+
+Test layer
+
+Coverage examples
+
+Unit tests
+
+DTI conversions, overdue calculation, partial payments, default denominator, risk thresholds and missing inputs
+
+Database tests
+
+Foreign keys, constraints, aggregation queries, cohort bucket boundaries and duplicate handling
+
+API tests
+
+Validation errors, pagination, filters, authorization and response schemas
+
+Frontend tests
+
+Filter state, table empty/loading/error states, risk explanation and responsive navigation
+
+Integration tests
+
+Import sample CSV → validate → persist → calculate metrics → render dashboard → export report
+
+Reconciliation tests
+
+Hand-calculated fixtures match SQL and Python metrics exactly within defined rounding rules
+
+12. Deployment and environment
+
+Maintain separate development and production configuration.
+
+Provide database migrations and a repeatable seed dataset for local development.
+
+Use health/readiness checks for API and database connectivity.
+
+Configure structured logs, error reporting and basic service monitoring.
+
+Run tests and dependency/security checks before deployment.
+
+Document local setup, environment variables, migration, seed, test and build commands in README.
+
+13. Technical acceptance criteria
+
+Every endpoint validates inputs and returns documented response schemas.
+
+Every metric has a tested formula and explicit reporting cutoff.
+
+Risk assessment is deterministic for a given input and rule version.
+
+Data imports produce a quality summary and never silently discard rejected rows.
+
+Large tables use server-side pagination and safe query parameters.
+
+Core screens provide responsive, accessible loading/error/empty states.
+
+An end-to-end test can ingest a sample dataset and produce a reconciled portfolio report.

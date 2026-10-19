@@ -1,0 +1,321 @@
+C R E D V I S T A
+
+Product Requirements Document
+
+What CredVista must deliver, for whom, and how success is measured
+
+PRD  •  Version 1.0  •  19 October 2026
+
+1. Executive summary
+
+CredVista is a credit-risk and loan-portfolio analytics application for lending operations, risk analysts and portfolio managers. It consolidates borrower, loan and repayment data into a clear, explainable view of portfolio exposure and repayment performance. The first release focuses on analytics and rule-based segmentation—not automated credit approval or a trained default-prediction model.
+
+2. Problem statement
+
+Lending teams need to understand outstanding exposure, repayment delays, defaults and differences between borrower segments. When data is scattered across files or tables, it is difficult to compare performance consistently, investigate risk drivers and report trends. CredVista provides a shared, traceable view with clearly defined metrics and drill-downs.
+
+3. Goals and non-goals
+
+Goals
+
+Provide a single, easy-to-navigate view of loan portfolio health.
+
+Help analysts segment borrowers using transparent, configurable business rules.
+
+Enable comparisons by credit score, DTI, risk band and loan origination cohort.
+
+Make every headline metric traceable to a definition, reporting period and source records.
+
+Export concise, repeatable portfolio reports.
+
+Non-goals for MVP
+
+Automatically approve or reject loan applications.
+
+Claim to predict an individual's probability of default using ML.
+
+Replace a lender's loan-origination system, servicing platform or core banking system.
+
+Make legal, regulatory or credit-policy decisions on behalf of a lender.
+
+Require complex workflow automation or a large enterprise integration before core analytics work.
+
+4. Users and jobs-to-be-done
+
+Persona
+
+Need
+
+Success outcome
+
+Credit Risk Analyst
+
+Find risk patterns and explain segment differences
+
+Can compare risk bands and investigate drivers with supporting data
+
+Portfolio Manager
+
+Monitor exposure, overdue amounts and defaults
+
+Can identify deterioration and produce a periodic portfolio report
+
+Lending Operations Analyst
+
+Find a borrower or loan and review repayment history
+
+Can locate a record quickly and see current status and history
+
+Administrator / Data Owner
+
+Maintain data quality and risk-rule definitions
+
+Can identify data issues and understand which rules/definitions are active
+
+5. Functional requirements
+
+ID
+
+Area
+
+Requirement
+
+Priority
+
+PR-01
+
+Dashboard
+
+Display total loans, outstanding principal, default rate and overdue amount for the selected reporting period.
+
+Must
+
+PR-02
+
+Search and filters
+
+Support global borrower/loan search and page-level filters for date, risk band, credit score, DTI and status where relevant.
+
+Must
+
+PR-03
+
+Borrower directory
+
+Provide sortable, paginated borrower table and borrower detail drill-down.
+
+Must
+
+PR-04
+
+Loan directory
+
+Provide loan-level details and status, with links to borrower and repayments.
+
+Must
+
+PR-05
+
+Repayment analysis
+
+Calculate due, paid, overdue and days-past-due metrics according to documented definitions.
+
+Must
+
+PR-06
+
+Risk segmentation
+
+Apply deterministic rules and expose the matching factors, rule version and effective date.
+
+Must
+
+PR-07
+
+Portfolio comparisons
+
+Aggregate metrics by risk band and credit-score band using consistent denominators.
+
+Must
+
+PR-08
+
+Vintage analysis
+
+Group loans by origination month and compare outcomes at fixed loan-age intervals.
+
+Must
+
+PR-09
+
+Reports/export
+
+Export filtered data and portfolio summary with period, filters, metric definitions and timestamp.
+
+Must
+
+PR-10
+
+Data quality
+
+Flag duplicate identifiers, missing required fields, invalid values and stale refreshes.
+
+Must
+
+PR-11
+
+Access control
+
+Restrict application data and administrative configuration to authorized roles.
+
+Must
+
+PR-12
+
+Auditability
+
+Record important rule changes and report-generation events where applicable.
+
+Should
+
+6. Metric definitions (MVP)
+
+Metric
+
+Proposed definition
+
+Important rule
+
+Outstanding principal
+
+Sum of remaining principal balance for loans in scope
+
+Exclude closed/settled loans unless historical exposure is requested
+
+Overdue amount
+
+Sum of unpaid amounts past due as of the reporting date
+
+Do not equate overdue amount with total outstanding principal
+
+Default rate
+
+Defaulted loans / loans in the defined eligible population
+
+Document default definition, denominator and observation window
+
+Repayment rate
+
+Amount paid / amount due for the selected due population and period
+
+State whether partial payments and fees are included
+
+DTI
+
+Monthly debt obligations / gross monthly income × 100
+
+Use a consistent income frequency and debt-obligation definition
+
+Risk-band share
+
+Borrowers or exposure in a risk band / corresponding portfolio total
+
+Label whether share is by borrower count or monetary exposure
+
+Vintage default rate
+
+Defaults within a defined origination cohort by a specified loan age / eligible cohort population
+
+Compare like-for-like loan ages; mark immature cohorts as not yet observable
+
+7. Business rules and risk segmentation
+
+Risk thresholds must be configuration, not scattered hard-coded values. Initial Low/Medium/High thresholds are placeholders until the project dataset and business policy are reviewed. The rules engine should produce: assigned band, contributing factors, rule version, evaluation date and any missing-input warning. A missing credit score or income must not silently be treated as low risk.
+
+Support rule precedence and deterministic outcomes for identical inputs.
+
+Separate business risk bands from repayment status such as Active, Overdue, Defaulted or Closed.
+
+Do not mix borrower-level and loan-level metrics without explicitly defining the aggregation.
+
+Allow a borrower to have multiple loans while preserving unique borrower and loan identifiers.
+
+Treat sensitive or protected attributes according to applicable policy; do not introduce them as risk features by default.
+
+8. Non-functional requirements
+
+Category
+
+Requirement
+
+Usability
+
+Common tasks should be discoverable with minimal training; consistent navigation and clear terminology.
+
+Performance
+
+For the agreed MVP dataset, primary pages should normally render within 2 seconds after data is available; large exports may run asynchronously.
+
+Reliability
+
+Show meaningful error states and never display a failed query as a valid zero.
+
+Security
+
+Authentication, role-based authorization, server-side validation, secure secrets and least-privilege database access.
+
+Privacy
+
+Use synthetic or appropriately de-identified data for demos; minimize personal data in logs and exports.
+
+Accessibility
+
+Keyboard-operable controls, visible focus, readable contrast and non-colour status labels.
+
+Maintainability
+
+Keep metric definitions, risk rules, data access and UI components separated and tested.
+
+Traceability
+
+Record report period, filter selection, metric definition/version and generation time.
+
+9. Success metrics
+
+An analyst can locate a borrower or loan using search and filters without scanning the full dataset.
+
+Every headline KPI can be reconciled to a documented query and sample records.
+
+Risk classifications are reproducible and include an explanation.
+
+Vintage comparisons do not compare immature cohorts as if they had equal observation time.
+
+Exports reproduce the selected period and filters.
+
+Usability review confirms that the dashboard is understandable without crowding or excessive chart density.
+
+10. Dependencies, assumptions and risks
+
+Required source data includes stable borrower/loan identifiers, origination dates, repayment schedule/payment records and current or historical balances.
+
+Default definition, reporting timezone, DTI inputs and treatment of partial payments must be agreed before final KPI implementation.
+
+Sample dashboard numbers are illustrative design content and must not be treated as real portfolio statistics.
+
+Historical vintage analysis requires dated observations or repayment events; a current snapshot alone may not reconstruct past performance.
+
+Data quality, incomplete history and inconsistent definitions can distort portfolio comparisons.
+
+11. MVP release criteria
+
+All Must requirements are implemented and verified against a representative dataset.
+
+Metric formulas and denominators are documented and reviewed.
+
+Risk rules are configurable, versioned and covered by tests.
+
+Borrower/loan drill-down, filters and export behave consistently.
+
+Security and data-quality checks pass; no secrets or unnecessary personal data are exposed.
+
+UI review confirms a premium, uncluttered and responsive experience.
