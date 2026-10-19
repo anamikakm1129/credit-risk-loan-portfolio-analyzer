@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../../services/api';
+import { api, API_BASE } from '../../services/api';
 import { Download, FileText, CheckCircle, Clock, Plus, Filter } from 'lucide-react';
 
 interface ReportsViewProps {
@@ -56,7 +56,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reportingDate }) => {
         </div>
         <div>
           <a
-            href={`/api/v1/reports/export.csv?reporting_date=${reportingDate}`}
+            href={`${API_BASE}/reports/export.csv?reporting_date=${reportingDate}`}
             download
             className="btn btn-primary"
             style={{ textDecoration: 'none' }}
@@ -80,7 +80,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reportingDate }) => {
               </p>
             </div>
             <a
-              href={`/api/v1/reports/export.csv?reporting_date=${reportingDate}`}
+              href={`${API_BASE}/reports/export.csv?reporting_date=${reportingDate}`}
               download
               className="btn btn-secondary"
             >
@@ -191,7 +191,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ reportingDate }) => {
                   <td>{r.portfolio_summary?.default_rate?.formatted_value || '—'}</td>
                   <td>
                     <a
-                      href={`/api/v1/reports/export.csv?reporting_date=${r.period_end || reportingDate}`}
+                      href={`${API_BASE}/reports/export.csv?reporting_date=${r.period_end || reportingDate}`}
                       download
                       className="btn btn-outline"
                       style={{ padding: '3px 8px', fontSize: '11px', textDecoration: 'none' }}

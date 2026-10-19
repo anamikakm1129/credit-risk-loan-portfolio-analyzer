@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../../services/api';
+import { api, API_BASE } from '../../services/api';
 import { StatusBadge } from '../../components/StatusBadge';
 import { UploadCloud, Download, Play, CheckCircle2, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react';
 
@@ -61,7 +61,7 @@ export const DataQualityView: React.FC = () => {
     if (loansFile) formData.append('loans_file', loansFile);
 
     try {
-      const res = await fetch('/api/v1/data-quality/upload', {
+      const res = await fetch(`${API_BASE}/data-quality/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -86,7 +86,7 @@ export const DataQualityView: React.FC = () => {
       return;
     }
     try {
-      const res = await fetch('/api/v1/data-quality/clear-portfolio', { method: 'POST' });
+      const res = await fetch(`${API_BASE}/data-quality/clear-portfolio`, { method: 'POST' });
       if (res.ok) {
         alert('All portfolio records have been cleared.');
         setUploadResult(null);
@@ -130,7 +130,7 @@ export const DataQualityView: React.FC = () => {
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
             <a
-              href="/api/v1/data-quality/templates/borrowers.csv"
+              href={`${API_BASE}/data-quality/templates/borrowers.csv`}
               download="borrowers_template.csv"
               className="btn btn-secondary"
               style={{ fontSize: '13.5px', padding: '6px 12px', textDecoration: 'none' }}
@@ -138,7 +138,7 @@ export const DataQualityView: React.FC = () => {
               <Download size={14} /> Borrowers Template
             </a>
             <a
-              href="/api/v1/data-quality/templates/loans.csv"
+              href={`${API_BASE}/data-quality/templates/loans.csv`}
               download="loans_template.csv"
               className="btn btn-secondary"
               style={{ fontSize: '13.5px', padding: '6px 12px', textDecoration: 'none' }}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../../services/api';
+import { api, API_BASE } from '../../services/api';
 import { KPICard } from '../../components/KPICard';
 import { StatusBadge } from '../../components/StatusBadge';
 import { AlertTriangle, UploadCloud, ArrowRight, Plus } from 'lucide-react';
@@ -101,7 +101,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <UploadCloud size={18} /> Go to Data Upload Portal
             </button>
             <a
-              href="/api/v1/data-quality/templates/borrowers.csv"
+              href={`${API_BASE}/data-quality/templates/borrowers.csv`}
               download="borrowers_template.csv"
               className="btn btn-secondary"
               style={{ padding: '10px 20px', fontSize: '15.5px', textDecoration: 'none' }}
